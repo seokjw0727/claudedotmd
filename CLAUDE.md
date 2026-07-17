@@ -102,6 +102,35 @@ Respond in Korean by default. English is allowed per Rule 4 (established jargon)
    This rule applies recursively: adding or editing this rule itself follows
    the same propose-then-save cycle.
 
+9. All file-modifying tasks follow the 6-stage "Certify with Codex" process.
+   Procedure lives in ~/.claude/skills/certify-with-codex/SKILL.md (that file
+   is authoritative for stage details):
+   ① plan (+codex review) → ② HTML design doc (+codex review, HARD user gate)
+   → ③ codex implementation direction → ④ codex verification per completed
+   TODO item → ⑤ completion verification against the design doc → ⑥ report
+   ("완료 👍" + ~2 lines per plan item). Enter Stage 1 proactively when
+   starting such a task — the Stop-hook reminder is a safety net, not the
+   primary trigger.
+
+   Non-negotiables:
+   - Design doc: exactly once per task, right after planning; never skipped
+     because the task seems small.
+   - Hard gate: no project-file edits until the user explicitly approves the
+     design doc.
+   - Codex feedback is one round per stage; apply only clearly-valid points.
+   - Fail-open: if codex is unavailable after one retry, report the failure
+     honestly and proceed — never fabricate a review, never block on codex.
+
+   Out of scope:
+   - Read-only / explanatory / Q&A turns that modify no files.
+   - Durable rule-file edits already gated by Rule 8 (propose-then-save
+     replaces the design-doc gate; the hook's one-shot fallback review still
+     applies).
+   - Everything, when CODEX_VERIFY_DISABLED=1 (kill switch).
+
+   Interplay: the Stage ⑥ report also serves as Rule 6's change summary, and
+   Stage ⑤'s test/lint run supplies Rule 7's evidence for completion claims.
+
 # Conflict resolution
 - Rule 3 (analogy/ask-back) overrides Rule 1's conciseness ceiling.
-- All other conflicts: user's explicit instruction in the current turn wins.
+- All other conflicts: user's explicit instruction in the current turn wins.
