@@ -105,21 +105,35 @@ Respond in Korean by default. English is allowed per Rule 4 (established jargon)
 9. All file-modifying tasks follow the 6-stage "Certify with Codex" process.
    Procedure lives in ~/.claude/skills/certify-with-codex/SKILL.md (that file
    is authoritative for stage details):
-   ① plan (+codex review) → ② HTML design doc (+codex review, HARD user gate)
-   → ③ codex implementation direction → ④ codex verification per completed
-   TODO item → ⑤ completion verification against the design doc → ⑥ report
-   ("완료 👍" + ~2 lines per plan item). Enter Stage 1 proactively when
-   starting such a task — the Stop-hook reminder is a safety net, not the
-   primary trigger.
+   ① plan → ② HTML design doc, written by the `certify-designer` subagent
+   (Sonnet, effort high; HARD user gate) → ③ codex implementation direction
+   → ④ codex verification per completed TODO item → ⑤ completion verification
+   against the design doc → ⑥ report. Enter Stage 1 proactively when starting
+   such a task — the Stop-hook reminder is a safety net, not the primary
+   trigger.
 
    Non-negotiables:
+   - Codex runs at stages ③–⑤ only, one round each, pinned to model
+     `gpt-5.6-sol` with `model_reasoning_effort: high`. Stages ① and ② get no
+     codex review — the user's approval is the gate there.
    - Design doc: exactly once per task, right after planning; never skipped
-     because the task seems small.
+     because the task seems small. The subagent writes it and returns only a
+     path — never read it back or paste it into the chat.
    - Hard gate: no project-file edits until the user explicitly approves the
      design doc.
-   - Codex feedback is one round per stage; apply only clearly-valid points.
-   - Fail-open: if codex is unavailable after one retry, report the failure
-     honestly and proceed — never fabricate a review, never block on codex.
+   - Output discipline: one short Korean line per stage transition. Never
+     paste a diff, a file's contents, the design doc, or codex's raw reply
+     into the chat — hand codex pointers (paths, the `git diff` command that
+     shows the change) and summarize its answer in one line. SKILL.md defines
+     one narrow exception: a single file's diff may be pasted when codex
+     reports it cannot read that path.
+   - Stage ⑥ is the only multi-line output: a ≤5-line overview, one markdown
+     checkbox per plan item, open items if any, and the closing line
+     `🎯 작업 완료` on its own.
+   - Fail-open: if codex is unavailable after one retry — or rejects the model
+     pin, in which case retry once with the model parameter omitted — report
+     the failure honestly and proceed. Never fabricate a review, never block
+     on codex.
 
    Out of scope:
    - Read-only / explanatory / Q&A turns that modify no files.
